@@ -44,7 +44,7 @@ contract MissionsSoS{
         string parameterKey;
         string parameterValue;
         string parameterDescription;
-        string parameterContentType;
+
     }
 
     struct Constituent {
@@ -125,7 +125,8 @@ contract MissionsSoS{
         HTTPMethod(_serviceHTTPMethod), serviceURL, ContentType(_serviceContentType), RAWDataType(_serviceRAWDataType));
     }
     
-    function getService(uint  _serviceCode) public view returns (uint, string memory, address, HTTPMethod, string memory, ContentType, RAWDataType) {
+    function getService(uint  _serviceCode) public view returns (uint, string memory, address, HTTPMethod, 
+        string memory, ContentType, RAWDataType) {
         return (_serviceCode, 
             serviceMap[_serviceCode].serviceDescription,
             serviceMap[_serviceCode].serviceOwner,
@@ -138,11 +139,16 @@ contract MissionsSoS{
     
     //-------Service Parameter-------
     
+    
+    function totalServiceParameter(uint _serviceCode) public view returns (uint) {
+        return _totalServiceParameter[_serviceCode];
+    }
+
     function setServiceParameter(uint  _serviceCode, string memory _parameterKey, 
-        string memory _parameterValue) public returns (bool) {
+        string memory _parameterValue, string memory _parameterDescription) public returns (bool) {
         if(msg.sender==serviceMap[_serviceCode].serviceOwner)
         {
-            MissionsSoS.Parameter memory parameter = Parameter(_parameterKey, _parameterValue, " ", " ");
+            MissionsSoS.Parameter memory parameter = Parameter(_parameterKey, _parameterValue, _parameterDescription);
             _totalServiceParameter[_serviceCode]=_totalServiceParameter[_serviceCode].add(1);
             serviceParameterMap[_serviceCode].push(parameter);
             return true;
@@ -151,18 +157,13 @@ contract MissionsSoS{
             return false;
         }
     }
-    
-    function totalServiceParameter(uint _serviceCode) public view returns (uint) {
-        return _totalServiceParameter[_serviceCode];
-    }
-    
+        
     function getServiceParameter(uint  _serviceCode, uint _parameterCode) public view 
-        returns (string memory, string memory, string memory, string memory) {
+        returns (string memory, string memory, string memory) {
 
         return (serviceParameterMap[_serviceCode][_parameterCode].parameterKey,
             serviceParameterMap[_serviceCode][_parameterCode].parameterValue,
-            serviceParameterMap[_serviceCode][_parameterCode].parameterDescription,
-            serviceParameterMap[_serviceCode][_parameterCode].parameterContentType
+            serviceParameterMap[_serviceCode][_parameterCode].parameterDescription
         );
     }
 
@@ -186,10 +187,10 @@ contract MissionsSoS{
     //--Constituent Parameter--
     
     function setConstituentParameter(uint  _constituentCode, string memory _parameterKey, 
-        string memory _parameterValue) public returns (bool) {
+        string memory _parameterValue, string memory _parameterDescription) public returns (bool) {
         if(msg.sender==constituentMap[_constituentCode].constituentOwner)
         {
-            MissionsSoS.Parameter memory parameter = Parameter(_parameterKey, _parameterValue, " ", " ");
+            MissionsSoS.Parameter memory parameter = Parameter(_parameterKey, _parameterValue, _parameterDescription);
             _totalConstituentParameter[_constituentCode]=_totalConstituentParameter[_constituentCode].add(1);
             constituentParameterMap[_constituentCode].push(parameter);
             return true;
@@ -204,12 +205,11 @@ contract MissionsSoS{
     }
     
     function getConstituentParameter(uint  _constituentCode, uint _parameterCode) public view 
-        returns (string memory, string memory, string memory, string memory) {
+        returns (string memory, string memory, string memory) {
 
         return (constituentParameterMap[_constituentCode][_parameterCode].parameterKey,
             constituentParameterMap[_constituentCode][_parameterCode].parameterValue,
-            constituentParameterMap[_constituentCode][_parameterCode].parameterDescription,
-            constituentParameterMap[_constituentCode][_parameterCode].parameterContentType
+            constituentParameterMap[_constituentCode][_parameterCode].parameterDescription
         );
     }
     
