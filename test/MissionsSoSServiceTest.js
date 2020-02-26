@@ -4,23 +4,35 @@ let instancia;
 
 beforeEach(async () => {
     instancia = await MissionsSoSService.new()
-    await instancia.setMission("Mission 0001","#Mission0001",0)
-    await instancia.setMission("Mission 0002","#Mission0002",0)
-    await instancia.setMission("Mission 0001.0001","#Mission0001.0001",0)
+    await instancia.setMission("Mission 0001","#Mission0001")
+    await instancia.setMission("Mission 0002","#Mission0002")
+    await instancia.setMission("Mission 0001.0001","#")
+    await instancia.setMission("Mission 0001.0002","#")
+    await instancia.setMission("Mission 0001.0003","#")
+    await instancia.setMission("Mission 0002.0001","#")
+    await instancia.setMissionMissionFather(2,0)
+    await instancia.setMissionMissionFather(3,0)
+    await instancia.setMissionMissionFather(4,0)
+    await instancia.setMissionMissionFather(5,1)
     await instancia.setConstituent()
     await instancia.setConstituent()
     await instancia.setConstituent()
 });
 
-contract('MissionsSoS', accounts => {
+contract('MissionsSoSService', accounts => {
 
     
     it('Crear misiones con los datos adecuados en las posiciones adecuadas', async() =>{       
-        assert.equal((await instancia.getMission(2))[4], 0, "El padre de la tercera misión no coincide")
+        assert.equal((await instancia.getMission(2))[1], "Mission 0001.0001", "La descripción de la tercera misión no coincide")
     });
     
     it('Crear misiones e ir actualizando el total de las misiones', async() =>{       
-        assert.equal(await instancia.totalMission(), 3, "Misiones no coinciden con el total de misiones")
+        assert.equal(await instancia.totalMission(), 6, "Misiones no coinciden con el total de misiones")
+    });
+
+    it('Crear subMisiones asignando a misiones ya creadas', async() =>{       
+        assert.equal((await instancia.getMissionMissionFather(3)), 0, "La submisión 3 está asignada a la misión 0")
+        assert.equal((await instancia.getMissionMissionFather(5)), 1, "La submisión 5 está asignada a la misión 1")
     });
     
     it('Crear constituyentes con los datos adecuados en las posiciones adecuadas', async() =>{       
@@ -31,6 +43,13 @@ contract('MissionsSoS', accounts => {
         assert.equal(await instancia.totalConstituent(), 3, "Constituyentes no coinciden con el total de constituyentes")
     });
 
+    it('Crear estados e ir actualizando el total de los estados', async() =>{
+        await instancia.setState(0)
+        await instancia.setState(1)
+        await instancia.setState(2)
+        await instancia.setState(1)       
+        assert.equal(await instancia.totalState(), 4, "Estados no coinciden con el total de misiones")
+    });
     
     it('Crear parámetros en los constituyentes e ir actualizando el total de los parámetros por constituyente', async() =>{       
         await instancia.setConstituentParameter(0, "clave 1.1", "valor 1.1", "descripción 1.1" )
@@ -70,6 +89,7 @@ contract('MissionsSoS', accounts => {
         await instancia.setConstituentService(2, "Servicio 0002.1", 0,"https://localhost/servicio003", 3, 3)
         await instancia.setConstituentService(2, "Servicio 0002.2", 0,"https://localhost/servicio003", 3, 3)
     
+        /*
         for(var i=0;i<await instancia.totalConstituent();i++)
         {
             console.log("Numero de constituyente")            
@@ -91,6 +111,7 @@ contract('MissionsSoS', accounts => {
                 
             }
         }
+        */
 
         assert.equal(await instancia.totalConstituentService(0), 2, "Total de servicios del constituyente no coinciden")
         assert.equal(await instancia.totalConstituentService(1), 6, "Total de servicios del constituyente no coinciden")
@@ -115,7 +136,7 @@ contract('MissionsSoS', accounts => {
         await instancia.setConstituentServiceParameter(2,0,  "clave 2.0.1", "valor 2.0.1", "descripción 2.0.1" );
         
  
-    
+        /*
         for(var i=0;i<await instancia.totalConstituent();i++)
         {
             console.log("Numero de constituyente")            
@@ -136,6 +157,7 @@ contract('MissionsSoS', accounts => {
                 }
             }
         }
+        */
 
         assert.equal(await instancia.totalConstituentService(0), 2, "Total de servicios del constituyente no coinciden")
         assert.equal(await instancia.totalConstituentService(1), 1, "Total de servicios del constituyente no coinciden")

@@ -31,13 +31,13 @@ contract MissionsSoSService{
     enum HTTPMethod  {GET, POST, PATCH, PUT, DELETE}
     enum ContentType {none, data, URL_encoded, raw, binary, GraphQL}
     enum RAWDataType {none, Text, JavaScript, JSON, HTML, XML}
+    enum EnumState {CANDIDATE, AVAILABLE, UNAVAILABLE}
 
    struct Mission {
         uint missionCode;
         string missionDescription;
         address missionOwner;
         string missionTag;
-        uint missionCodeFather;
     }
 
     struct Parameter {
@@ -60,15 +60,22 @@ contract MissionsSoSService{
         ContentType serviceContentType;
         RAWDataType serviceRAWDataType;
     }
+
+    struct State {
+        uint stateCode;
+        EnumState stateState;
+        address stateOwner;
+    }
+
     
     //--------Mission---------
     uint private _totalMission;
     mapping(uint => Mission) private missionMap;
- 
-    //---------Constituyente Service-------
-    //uint private _totalService;
-    //mapping(uint => Service) private serviceMap;
 
+    //-------Mission MissionFather-------
+    mapping(uint => uint) private _totalMissionMissionFather;
+    mapping(uint => uint) private missionMissionFatherMap;
+ 
     //-------Constituent-------
     uint private _totalConstituent;
     mapping(uint => Constituent) private constituentMap;
@@ -83,10 +90,15 @@ contract MissionsSoSService{
     mapping(uint => mapping(uint => uint)) private _totalConstituentServiceParameter;
     mapping(uint => mapping(uint => Parameter[])) private constituentServiceParameterMap;
     
-    //-------Service Mission-------
-    mapping(uint => uint) private _totalServiceMission;
-    mapping(uint => Mission[]) private serviceMissionMap;
- 
+    //-------State-------
+    uint private _totalState;
+    mapping(uint => State) private stateMap;
+
+    //-------State Mission ---------
+
+
+    //-------State Service ---------
+
 
 
     //--------Mission---------
@@ -95,20 +107,35 @@ contract MissionsSoSService{
         return _totalMission;
     }
     
-    function setMission(string memory _missionDescription, string memory _missionTag, uint _missionCodeFather) public {
-        missionMap[_totalMission] = Mission(_totalMission, _missionDescription, msg.sender, _missionTag, _missionCodeFather);
+    function setMission(string memory _missionDescription, string memory _missionTag) public {
+        missionMap[_totalMission] = Mission(_totalMission, _missionDescription, msg.sender, _missionTag);
         _totalMission = _totalMission.add(1);
     }
 
-    function getMission(uint  _missionCode) public view returns (uint, string memory, address, string memory, uint) {
+    function getMission(uint  _missionCode) public view returns (uint, string memory, address, string memory) {
         return (_missionCode,
             missionMap[_missionCode].missionDescription,
             missionMap[_missionCode].missionOwner,
-            missionMap[_missionCode].missionTag,
-            missionMap[_missionCode].missionCodeFather
+            missionMap[_missionCode].missionTag
         );
     }
- 
+
+    //-----------Mission MissionFather -----------
+    function totalMissionMissionFather(uint _missionCode) public view returns (uint) {
+        return _totalMissionMissionFather[_missionCode];
+    }
+
+    function setMissionMissionFather(uint _missionCode, uint _missionCodeFather) public {
+        if((_missionCode >=0 )&&(_missionCode < _totalMission ))
+        {
+            missionMissionFatherMap[_missionCode] = _missionCodeFather;
+            _totalMissionMissionFather[_missionCode] = _totalMissionMissionFather[_missionCode].add(1);
+        }
+    }
+
+    function getMissionMissionFather(uint  _missionCode) public view returns (uint) {
+        return (missionMissionFatherMap[_missionCode]);
+    }
     
     //-------Constituent-------
     
@@ -217,62 +244,25 @@ contract MissionsSoSService{
             (constituentServiceParameterMap[_constituentCode][_serviceCode])[_parameterCode].parameterDescription
         );
     }
-    
-     //---------Service-------
-    /*
-    function totalService() public view returns (uint) {
-        return _totalService;
+
+
+    //-----------State  -----------
+
+    function totalState() public view returns (uint) {
+        return _totalState;
     }
     
-    function setService(string memory _serviceDescription, uint _serviceHTTPMethod, 
-        string memory serviceURL, uint _serviceContentType, uint _serviceRAWDataType) public {
-        _totalService = _totalService.add(1);
-        serviceMap[_totalService] = Service(_totalService, _serviceDescription, HTTPMethod(_serviceHTTPMethod), 
-        serviceURL, ContentType(_serviceContentType), RAWDataType(_serviceRAWDataType), msg.sender);
-    }
-    
-    function getService(uint  _serviceCode) public view returns (uint, string memory, HTTPMethod, 
-        string memory, ContentType, RAWDataType, address) {
-        return (_serviceCode, 
-            serviceMap[_serviceCode].serviceDescription,
-            serviceMap[_serviceCode].serviceHTTPMethod,
-            serviceMap[_serviceCode].serviceURL,
-            serviceMap[_serviceCode].serviceContentType,
-            serviceMap[_serviceCode].serviceRAWDataType,
-            serviceMap[_serviceCode].serviceOwner
-        );
-    }    
-    */
-    //-------Service Parameter-------
-    
-    /*
-    function totalServiceParameter(uint _serviceCode) public view returns (uint) {
-        return _totalServiceParameter[_serviceCode];
+    function setState(uint _stateState) public {
+        stateMap[_totalState] = State(_totalState, EnumState(_stateState), msg.sender);
+        _totalState = _totalState.add(1);
     }
 
-    function setServiceParameter(uint  _serviceCode, string memory _parameterKey, 
-        string memory _parameterValue, string memory _parameterDescription) public returns (bool) {
-        if(msg.sender==serviceMap[_serviceCode].serviceOwner)
-        {
-            MissionsSoSService.Parameter memory parameter = Parameter(_parameterKey, _parameterValue, _parameterDescription);
-            _totalServiceParameter[_serviceCode]=_totalServiceParameter[_serviceCode].add(1);
-            serviceParameterMap[_serviceCode].push(parameter);
-            return true;
-        }else
-        {
-            return false;
-        }
-    }
-        
-    function getServiceParameter(uint  _serviceCode, uint _parameterCode) public view 
-        returns (string memory, string memory, string memory) {
-
-        return (serviceParameterMap[_serviceCode][_parameterCode].parameterKey,
-            serviceParameterMap[_serviceCode][_parameterCode].parameterValue,
-            serviceParameterMap[_serviceCode][_parameterCode].parameterDescription
+    function getState(uint  _stateCode) public view returns (uint, EnumState, address) {
+        return (_stateCode,
+            stateMap[_stateCode].stateState,
+            stateMap[_stateCode].stateOwner
         );
     }
-*/
 
-
+    
 }
