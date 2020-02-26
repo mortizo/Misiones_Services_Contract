@@ -55,11 +55,11 @@ contract MissionsSoS{
     struct Service {
         uint serviceCode;
         string serviceDescription;
-        address serviceOwner;
         HTTPMethod serviceHTTPMethod;
         string serviceURL;
         ContentType serviceContentType;
         RAWDataType serviceRAWDataType;
+        address serviceOwner;
     }
     
     //--------Mission---------
@@ -85,15 +85,9 @@ contract MissionsSoS{
     //---Constituent Service---
     mapping(uint => uint) private _totalConstituentService;
     mapping(uint => Service[]) private constituentServiceMap;
- 
-    
-    constructor() public {
 
-    }
-    
-    
     //--------Mission---------
-        
+
     function totalMission() public view returns (uint) {
         return _totalMission;
     }
@@ -102,9 +96,9 @@ contract MissionsSoS{
         _totalMission = _totalMission.add(1);
         missionMap[_totalMission] = Mission(_totalMission, _missionDescription, msg.sender, _missionTag, _missionCodeFather);
     }
-    
+
     function getMission(uint  _missionCode) public view returns (uint, string memory, address, string memory, uint) {
-        return (_missionCode, 
+        return (_missionCode,
             missionMap[_missionCode].missionDescription,
             missionMap[_missionCode].missionOwner,
             missionMap[_missionCode].missionTag,
@@ -121,19 +115,19 @@ contract MissionsSoS{
     function setService(string memory _serviceDescription, uint _serviceHTTPMethod, 
         string memory serviceURL, uint _serviceContentType, uint _serviceRAWDataType) public {
         _totalService = _totalService.add(1);
-        serviceMap[_totalService] = Service(_totalService, _serviceDescription, msg.sender, 
-        HTTPMethod(_serviceHTTPMethod), serviceURL, ContentType(_serviceContentType), RAWDataType(_serviceRAWDataType));
+        serviceMap[_totalService] = Service(_totalService, _serviceDescription, HTTPMethod(_serviceHTTPMethod), 
+        serviceURL, ContentType(_serviceContentType), RAWDataType(_serviceRAWDataType), msg.sender);
     }
     
-    function getService(uint  _serviceCode) public view returns (uint, string memory, address, HTTPMethod, 
-        string memory, ContentType, RAWDataType) {
+    function getService(uint  _serviceCode) public view returns (uint, string memory, HTTPMethod, 
+        string memory, ContentType, RAWDataType, address) {
         return (_serviceCode, 
             serviceMap[_serviceCode].serviceDescription,
-            serviceMap[_serviceCode].serviceOwner,
             serviceMap[_serviceCode].serviceHTTPMethod,
             serviceMap[_serviceCode].serviceURL,
             serviceMap[_serviceCode].serviceContentType,
-            serviceMap[_serviceCode].serviceRAWDataType
+            serviceMap[_serviceCode].serviceRAWDataType,
+            serviceMap[_serviceCode].serviceOwner
         );
     }    
     
@@ -212,6 +206,16 @@ contract MissionsSoS{
             constituentParameterMap[_constituentCode][_parameterCode].parameterDescription
         );
     }
-    
+
+    //-----Constituent Service--------
+
+    function setConstituentService(uint  _constituentCode, uint _serviceCode) public returns (bool) {
+        
+        return true;
+    }
+
+   function totalConstituentService(uint _constituentCode) public view returns (uint) {
+        return _totalConstituentService[_constituentCode];
+    }
 
 }

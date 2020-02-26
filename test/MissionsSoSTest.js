@@ -1,8 +1,10 @@
+/*
 const MissionsSoS = artifacts.require('MissionsSoS');
 
 let instancia;
 
 beforeEach(async () => {
+    
     instancia = await MissionsSoS.new()
     await instancia.setMission("Mission 0001","#Mission0001",0)
     await instancia.setMission("Mission 0002","#Mission0002",0)
@@ -41,7 +43,7 @@ contract('MissionsSoS', accounts => {
         assert.equal(await instancia.totalConstituent(), 3, "Constituyentes no coinciden con el total de constituyentes")
     });
 
-    it('Crear Parámetros en los servicios e ir actualizando el total de los parámetros por servicio', async() =>{       
+    it('Crear parámetros en los servicios e ir actualizando el total de los parámetros por servicio', async() =>{       
         await instancia.setServiceParameter(1, "clave 1.1", "valor 1.1", "descripción 1.1" )
         await instancia.setServiceParameter(1, "clave 1.2", "valor 1.2", "descripción 1.2" )
         await instancia.setServiceParameter(1, "clave 1.3", "valor 1.3", "descripción 1.3" )
@@ -54,7 +56,7 @@ contract('MissionsSoS', accounts => {
         assert.equal(await instancia.totalServiceParameter(3), 1, "Total de parámetros del servicio no coinciden")
     });
 
-    it('Crear Parámetros en los servicios con los datos adecuados en las posiciones adecuadas', async() =>{       
+    it('Crear parámetros en los servicios con los datos adecuados en las posiciones adecuadas', async() =>{       
         await instancia.setServiceParameter(1, "clave 1.1", "valor 1.1", "descripción 1.1" )
         await instancia.setServiceParameter(1, "clave 1.2", "valor 1.2", "descripción 1.2" )
         await instancia.setServiceParameter(1, "clave 1.3", "valor 1.3", "descripción 1.3" )
@@ -67,7 +69,7 @@ contract('MissionsSoS', accounts => {
         assert.equal((await instancia.getServiceParameter(3,0))[2], "descripción 3.1", "La descripción del tercer servicio no coincide")
     });
 
-    it('Crear Parámetros en los constituyentes e ir actualizando el total de los parámetros por constituyente', async() =>{       
+    it('Crear parámetros en los constituyentes e ir actualizando el total de los parámetros por constituyente', async() =>{       
         await instancia.setConstituentParameter(1, "clave 1.1", "valor 1.1", "descripción 1.1" )
         await instancia.setConstituentParameter(2, "clave 2.1", "valor 2.1", "descripción 2.1" )
         await instancia.setConstituentParameter(2, "clave 2.2", "valor 2.2", "descripción 2.2" )
@@ -79,7 +81,7 @@ contract('MissionsSoS', accounts => {
         assert.equal(await instancia.totalConstituentParameter(3), 3, "Total de parámetros del constituyente no coinciden")
     });
 
-    it('Crear Parámetros en los constituyentes con los datos adecuados en las posiciones adecuadas', async() =>{       
+    it('Crear parámetros en los constituyentes con los datos adecuados en las posiciones adecuadas', async() =>{       
         await instancia.setConstituentParameter(1, "clave 1.1", "valor 1.1", "descripción 1.1" )
         await instancia.setConstituentParameter(2, "clave 2.1", "valor 2.1", "descripción 2.1" )
         await instancia.setConstituentParameter(2, "clave 2.2", "valor 2.2", "descripción 2.2" )
@@ -92,8 +94,19 @@ contract('MissionsSoS', accounts => {
         assert.equal((await instancia.getConstituentParameter(3,2))[2], "descripción 3.3", "La descripción del tercer constituyente no coincide")
     });
 
+    it('Crear servicios en los constituyentes e ir actualizando el total de los servicios por constituyente', async() =>{       
+        await instancia.setConstituentService(1, 2)
+        await instancia.setConstituentService(1, 3)
+        await instancia.setConstituentService(2, 1)
+                         
+        assert.equal(await instancia.totalConstituentService(1), 2, "Total de parámetros del constituyente no coinciden")
+        assert.equal(await instancia.totalConstituentService(2), 1, "Total de parámetros del constituyente no coinciden")
+        assert.equal(await instancia.totalConstituentService(3), 0, "Total de parámetros del constituyente no coinciden")
+    });
 
-    /*
+
+
+    
     it('Debe existir vuelos disponibles', async() =>{
         let total = await instancia.totalVuelos();
         assert (total > 0);
@@ -152,7 +165,7 @@ contract('MissionsSoS', accounts => {
         assert(puntos, 0);
         assert(balanceFinal > balance);
     });
-*/
-    
+  
     
 });
+*/
