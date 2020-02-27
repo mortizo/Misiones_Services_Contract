@@ -1,28 +1,6 @@
 pragma solidity  >=0.5.16 <0.7.0;
 
-library SafeMath {
-    function add(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        c = a + b;
-        assert(c >= a);
-        return c;
-    }
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b <= a);
-        return a - b;
-    }
-    function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
-        if (a == 0) {
-            return 0;
-        }
-        c = a * b;
-        assert(c / a == b);
-        return c;
-    }
-    function div(uint256 a, uint256 b) internal pure returns (uint256) {
-        assert(b>0);
-        return a / b;
-    }
-}
+import "./SafeMath.sol";
 
 contract MissionsSoSService{
 
@@ -259,10 +237,10 @@ contract MissionsSoSService{
 
     function setStateMissionConstituentService(uint _stateCode,uint _missionCode,
     uint _constituentCode, uint _serviceCode) public {
-        require(_stateCode>=0 && _stateCode < totalState(),"State don't exists");
-        require(_missionCode>=0 && _missionCode < totalMission(),"Mission don't exist");
-        require(_constituentCode>=0 && _constituentCode < totalConstituent(),"Constituent don't exist");
-        require(_serviceCode>=0 && _serviceCode < totalConstituentService(_constituentCode),"Service don't exist");
+        require(_stateCode>=0 && _stateCode<totalState(),"State don't exists");
+        require(_missionCode>=0 && _missionCode<totalMission(),"Mission don't exist");
+        require(_constituentCode>=0 && _constituentCode<totalConstituent(),"Constituent don't exist");
+        require(_serviceCode>=0 && _serviceCode<totalConstituentService(_constituentCode),"Service don't exist");
         stateMissionMap[_stateCode] = _missionCode;
         stateConstituentMap[_stateCode] = _constituentCode;
         stateServiceMap[_stateCode] = _serviceCode;
