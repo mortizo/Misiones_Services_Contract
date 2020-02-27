@@ -9,7 +9,7 @@ beforeEach(async () => {
 contract('MissionsSoSService', accounts => {
 
    
-    it('Crear misiones con los datos adecuados en las posiciones adecuadas', async() =>{       
+    it('Mission 01| Crear misiones con los datos adecuados en las posiciones adecuadas', async() =>{       
         await instancia.setMission("Mission 0001","#Mission0001")
         await instancia.setMission("Mission 0002","#Mission0002")
         await instancia.setMission("Mission 0001.0001","#")
@@ -19,7 +19,7 @@ contract('MissionsSoSService', accounts => {
         assert.equal((await instancia.getMission(2))[1], "Mission 0001.0001", "La descripción de la tercera misión no coincide")
     });
     
-    it('Crear misiones e ir actualizando el total de las misiones', async() =>{
+    it('Mission 02| Crear misiones e ir actualizando el total de las misiones', async() =>{
         await instancia.setMission("Mission 0001","#Mission0001")
         await instancia.setMission("Mission 0002","#Mission0002")
         await instancia.setMission("Mission 0001.0001","#")
@@ -29,7 +29,7 @@ contract('MissionsSoSService', accounts => {
         assert.equal(await instancia.totalMission(), 6, "Misiones no coinciden con el total de misiones")
     });
 
-    it('Crear superMisiones asignando a misiones ya creadas', async() =>{    
+    it('Mission 03| Crear superMisiones asignando a misiones ya creadas', async() =>{    
         await instancia.setMission("Mission 0000","#Mission0001")
         await instancia.setMission("Mission 0001","#Mission0002")
         await instancia.setMission("Mission 0000.0001","#")
@@ -233,8 +233,98 @@ contract('MissionsSoSService', accounts => {
         assert.equal(( await instancia.getStateMissionConstituentService(3))[3], 2, "Estados misiones constituyentes y servicios almacenados correctamente")
     });
 
-    it('Caso 13', async() =>{
-        
+    it('No debe permitir detalles a partir de estados que no existan', async() =>{
+        await instancia.setState(0)
+        await instancia.setState(1)
+        await instancia.setState(2)
+        await instancia.setState(1)
+
+        await instancia.setMission("Mission 0000","#Mission0001")
+        await instancia.setMission("Mission 0001","#Mission0002")
+
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituentService(0, "Servicio 0000.0", 0,"https://localhost/servicio00A", 3, 3)
+        await instancia.setConstituentService(0, "Servicio 0000.1", 0,"https://localhost/servicio00B", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.0", 0,"https://localhost/servicio00C", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.1", 0,"https://localhost/servicio00D", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.2", 0,"https://localhost/servicio00E", 3, 3)
+
+        try{
+            await instancia.setStateMissionConstituentService(3000,1,1,2)
+        }
+        catch(e) {return;}
+        assert.fail();
+    })
+
+        it('No debe permitir crear estados con misiones que no existan', async() =>{
+        await instancia.setState(0)
+        await instancia.setState(1)
+        await instancia.setState(2)
+        await instancia.setState(1)
+
+        await instancia.setMission("Mission 0000","#Mission0001")
+        await instancia.setMission("Mission 0001","#Mission0002")
+
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituentService(0, "Servicio 0000.0", 0,"https://localhost/servicio00A", 3, 3)
+        await instancia.setConstituentService(0, "Servicio 0000.1", 0,"https://localhost/servicio00B", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.0", 0,"https://localhost/servicio00C", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.1", 0,"https://localhost/servicio00D", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.2", 0,"https://localhost/servicio00E", 3, 3)
+
+        try{
+            await instancia.setStateMissionConstituentService(3,1000,1,2)
+        }
+        catch(e) {return;}
+        assert.fail();
+    })
+    it('No debe permitir crear estados con constituyentes que no existan', async() =>{
+        await instancia.setState(0)
+        await instancia.setState(1)
+        await instancia.setState(2)
+        await instancia.setState(1)
+
+        await instancia.setMission("Mission 0000","#Mission0001")
+        await instancia.setMission("Mission 0001","#Mission0002")
+
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituentService(0, "Servicio 0000.0", 0,"https://localhost/servicio00A", 3, 3)
+        await instancia.setConstituentService(0, "Servicio 0000.1", 0,"https://localhost/servicio00B", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.0", 0,"https://localhost/servicio00C", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.1", 0,"https://localhost/servicio00D", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.2", 0,"https://localhost/servicio00E", 3, 3)
+
+        try{
+            await instancia.setStateMissionConstituentService(3,1,1000,2)
+        }
+        catch(e) {return;}
+        assert.fail();
+    })
+    it('No debe permitir crear estados con servicios que no existan', async() =>{
+        await instancia.setState(0)
+        await instancia.setState(1)
+        await instancia.setState(2)
+        await instancia.setState(1)
+
+        await instancia.setMission("Mission 0000","#Mission0001")
+        await instancia.setMission("Mission 0001","#Mission0002")
+
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituentService(0, "Servicio 0000.0", 0,"https://localhost/servicio00A", 3, 3)
+        await instancia.setConstituentService(0, "Servicio 0000.1", 0,"https://localhost/servicio00B", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.0", 0,"https://localhost/servicio00C", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.1", 0,"https://localhost/servicio00D", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.2", 0,"https://localhost/servicio00E", 3, 3)
+
+        try{
+            await instancia.setStateMissionConstituentService(3,1,1,2000)
+        }
+        catch(e) {return;}
+        assert.fail();
     })
     
     it('Caso 14', async() =>{

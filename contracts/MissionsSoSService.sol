@@ -130,13 +130,10 @@ contract MissionsSoSService{
     }
 
     function setMissionSuperMission(uint _missionCode, uint _superMissionCode) public {
-        if((_missionCode>0&&_missionCode<_totalMission)&&
-            (_superMissionCode>=0&&_superMissionCode<_totalMission)&&
-            (_missionCode!=_superMissionCode))
-        {
-            missionSuperMissionMap[_missionCode] = _superMissionCode;
-            _totalMissionSuperMission[_missionCode] = _totalMissionSuperMission[_missionCode].add(1);
-        }
+        require(_missionCode>0&&_missionCode<_totalMission,"Mission don't exist");
+        require(_superMissionCode>=0&&_superMissionCode<_missionCode,"SuperMission is equal or more than mission");
+        missionSuperMissionMap[_missionCode] = _superMissionCode;
+        _totalMissionSuperMission[_missionCode] = _totalMissionSuperMission[_missionCode].add(1);
     }
 
     function getMissionSuperMission(uint  _missionCode) public view returns (uint) {
@@ -162,18 +159,13 @@ contract MissionsSoSService{
 
     function setConstituentParameter(uint  _constituentCode,
     string memory _parameterKey,string memory _parameterValue,
-    string memory _parameterDescription) public returns (bool) {
-        if(msg.sender==constituentMap[_constituentCode].constituentOwner)
-        {
-            Parameter memory _parameter = Parameter(_parameterKey,
-            _parameterValue, _parameterDescription);
-            constituentParameterMap[_constituentCode].push(_parameter);
-            _totalConstituentParameter[_constituentCode] = _totalConstituentParameter[_constituentCode].add(1);
-            return true;
-        }else
-        {
-            return false;
-        }
+    string memory _parameterDescription) public {
+        require(msg.sender==constituentMap[_constituentCode].constituentOwner,"Only Constituent owner can add parameters");
+        Parameter memory _parameter = Parameter(_parameterKey,
+        _parameterValue, _parameterDescription);
+        constituentParameterMap[_constituentCode].push(_parameter);
+        _totalConstituentParameter[_constituentCode] = _totalConstituentParameter[_constituentCode].add(1);
+
     }
 
     function totalConstituentParameter(uint _constituentCode) public view returns (uint) {
@@ -193,19 +185,13 @@ contract MissionsSoSService{
     function setConstituentService(uint  _constituentCode,
     string memory _serviceDescription,uint _serviceHTTPMethod,
     string memory serviceURL, uint _serviceContentType,
-    uint _serviceRAWDataType) public returns (bool) {
-        if(msg.sender==constituentMap[_constituentCode].constituentOwner)
-        {
-            Service memory _service = Service(_totalConstituentService[_constituentCode],
-            _serviceDescription, HTTPMethod(_serviceHTTPMethod),serviceURL,
-            ContentType(_serviceContentType),RAWDataType(_serviceRAWDataType));
-            constituentServiceMap[_constituentCode].push(_service);
-            _totalConstituentService[_constituentCode] = _totalConstituentService[_constituentCode].add(1);
-            return true;
-        }else
-        {
-            return false;
-        }
+    uint _serviceRAWDataType) public {
+        require(msg.sender==constituentMap[_constituentCode].constituentOwner,"Only Constituent owner can add services");
+        Service memory _service = Service(_totalConstituentService[_constituentCode],
+        _serviceDescription, HTTPMethod(_serviceHTTPMethod),serviceURL,
+        ContentType(_serviceContentType),RAWDataType(_serviceRAWDataType));
+        constituentServiceMap[_constituentCode].push(_service);
+        _totalConstituentService[_constituentCode] = _totalConstituentService[_constituentCode].add(1);
     }
 
     function totalConstituentService(uint _constituentCode) public view returns (uint) {
@@ -228,16 +214,11 @@ contract MissionsSoSService{
     function setConstituentServiceParameter(uint  _constituentCode,uint  _serviceCode,
     string memory _parameterKey,string memory _parameterValue,
     string memory _parameterDescription) public returns (bool) {
-        if(msg.sender==constituentMap[_constituentCode].constituentOwner)
-        {
-            Parameter memory _parameter = Parameter(_parameterKey, _parameterValue,_parameterDescription);
-            constituentServiceParameterMap[_constituentCode][_serviceCode].push(_parameter);
-            _totalConstituentServiceParameter[_constituentCode][_serviceCode] = _totalConstituentServiceParameter[_constituentCode][_serviceCode].add(1);
-            return true;
-        }else
-        {
-            return false;
-        }
+        require(msg.sender==constituentMap[_constituentCode].constituentOwner,"Only Constituent owner can add parameters to services");
+        Parameter memory _parameter = Parameter(_parameterKey, _parameterValue,_parameterDescription);
+        constituentServiceParameterMap[_constituentCode][_serviceCode].push(_parameter);
+        uint auxTotal = _totalConstituentServiceParameter[_constituentCode][_serviceCode];
+        _totalConstituentServiceParameter[_constituentCode][_serviceCode] = auxTotal.add(1);
     }
 
     function totalConstituentServiceParameter(uint _constituentCode,
@@ -262,6 +243,7 @@ contract MissionsSoSService{
     }
 
     function setState(uint _stateState) public {
+        require(_stateState>=0&&_stateState<=2,"CANDIDATE: 0, AVAILABLE: 1, UNAVAILABLE: 2");
         stateMap[_totalState] = State(_totalState, EnumState(_stateState), msg.sender);
         _totalState = _totalState.add(1);
     }
@@ -275,19 +257,15 @@ contract MissionsSoSService{
 
     //-----------State Mission Constituent Service -----------
 
-    function setStateMissionConstituentService(uint _stateCode, uint _missionCode,
-    uint _constituentCode, uint _serviceCode) public returns (bool){
-        if((_stateCode>=0 && _stateCode < totalState()) &&
-        (_missionCode>=0 && _missionCode < totalMission()) &&
-        (_constituentCode>=0 && _constituentCode < totalConstituent()) &&
-        (_serviceCode>=0 && _serviceCode < totalConstituentService(_constituentCode))){
-            stateMissionMap[_stateCode] = _missionCode;
-            stateConstituentMap[_stateCode] = _constituentCode;
-            stateServiceMap[_stateCode] = _serviceCode;
-            return true;
-        }else{
-            return false;
-        }
+    function setStateMissionConstituentService(uint _stateCode,uint _missionCode,
+    uint _constituentCode, uint _serviceCode) public {
+        require(_stateCode>=0 && _stateCode < totalState(),"State don't exists");
+        require(_missionCode>=0 && _missionCode < totalMission(),"Mission don't exist");
+        require(_constituentCode>=0 && _constituentCode < totalConstituent(),"Constituent don't exist");
+        require(_serviceCode>=0 && _serviceCode < totalConstituentService(_constituentCode),"Service don't exist");
+        stateMissionMap[_stateCode] = _missionCode;
+        stateConstituentMap[_stateCode] = _constituentCode;
+        stateServiceMap[_stateCode] = _serviceCode;
     }
 
     function getStateMissionConstituentService(uint _stateCode)
