@@ -1,104 +1,98 @@
 pragma solidity  >=0.5.16 <0.7.0;
 
-import "./IERC20.sol";
+import "./Context.sol";
 import "./SafeMath.sol";
 
-contract TokenConfidance is IERC20{
+//Utilizando https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v2.4.0
 
-    using SafeMath for uint;
+contract TokenConfidance is Context {
 
-    string public symbol;
-    string public  name;
-    uint8 public decimals;
-    uint _totalSupply;
+    using SafeMath for uint256;
 
-    mapping(address => uint) balances;
-    mapping(address => mapping(address => uint)) allowed;
-   // ------------------------------------------------------------------------
-   // Constructor
-   // ------------------------------------------------------------------------
-   // constructor (uint256 _initialAmount, string memory _tokenName, uint8 _decimalUnits, string memory _tokenSymbol) public {
-   //     balances[msg.sender] = _initialAmount;
-   //     _totalSupply = _initialAmount;
-   //     name = _tokenName;
-   //     decimals = _decimalUnits;
-   //     symbol = _tokenSymbol;
-   // }
+    mapping (address => uint256) private balanceMap;
 
-    constructor () public {
-        balances[msg.sender] = 19810000;
-        _totalSupply = 19810000;
-        name = "Token de Prueba Mauricio";
-        decimals = 4;
-        symbol = "MOR";
-    }
+    mapping (address => mapping (address => uint256)) private allowanceMap;
 
-    // ------------------------------------------------------------------------
-    // Fallback function. Don't accept ETH
-    // ------------------------------------------------------------------------
-    function () external payable {
-        revert("Don't accept ETH");
-    }
+    uint256 private _totalSupply;
 
-    // ------------------------------------------------------------------------
-    // Fixed Total supply
-    // ------------------------------------------------------------------------
-    function totalSupply() public view returns (uint) {
+    function totalSupply() public view returns (uint256){
         return _totalSupply;
     }
 
-    // ------------------------------------------------------------------------
-    // Get the token balance for account `tokenOwner`
-    // ------------------------------------------------------------------------
-    function balanceOf(address tokenOwner) public view returns (uint balance) {
-        return balances[tokenOwner];
+    function balanceOf(address _account) public view returns (uint256) {
+        return balanceMap[_account];
     }
 
-    // ------------------------------------------------------------------------
-    // Returns the amount of tokens approved by the owner that can be
-    // transferred to the spender's account
-    // ------------------------------------------------------------------------
-    function allowance(address tokenOwner, address spender) public view returns (uint remaining) {
-        return allowed[tokenOwner][spender];
-    }
-
-    // ------------------------------------------------------------------------
-    // Transfer the balance from token owner's account to `to` account
-    // - Owner's account must have sufficient balance to transfer
-    // - 0 value transfers are allowed
-    // ------------------------------------------------------------------------
-    function transfer(address to, uint tokens) public returns (bool success) {
-        balances[msg.sender] = balances[msg.sender].sub(tokens);
-        balances[to] = balances[to].add(tokens);
-        emit Transfer(msg.sender, to, tokens);
+    function transfer(address _recipient, uint256 _amount) public returns (bool) {
+        _transfer(_msgSender(), _recipient, _amount);
         return true;
     }
 
-    // ------------------------------------------------------------------------
-    // Token owner can approve for `spender` to transferFrom(...) `tokens`
-    // from the token owner's account
-    //
-    // ------------------------------------------------------------------------
-    //
-    function approve(address spender, uint tokens) public returns (bool success) {
-        allowed[msg.sender][spender] = tokens;
-        emit Approval(msg.sender, spender, tokens);
+    function allowance(address _owner, address _spender) public view returns (uint256) {
+        return allowanceMap[_owner][_spender];
+    }
+
+    function approve(address _spender, uint256 _amount) public returns (bool) {
+        _approve(_msgSender(), _spender, _amount);
         return true;
     }
 
-    // ------------------------------------------------------------------------
-    // Transfer `tokens` from the `from` account to the `to` account
-    // The calling account must already have sufficient tokens approve(...)-d
-    // for spending from the `from` account and
-    // - From account must have sufficient balance to transfer
-    // - Spender must have sufficient allowance to transfer
-    // - 0 value transfers are allowed
-    // ------------------------------------------------------------------------
-    function transferFrom(address from, address to, uint tokens) public returns (bool success) {
-        balances[from] = balances[from].sub(tokens);
-        allowed[from][msg.sender] = allowed[from][msg.sender].sub(tokens);
-        balances[to] = balances[to].add(tokens);
-        emit Transfer(from, to, tokens);
+    function transferFrom(address _sender, address _recipient, uint256 _amount) public returns (bool) {
+        _transfer(_sender, _recipient, _amount);
+        _approve(_sender, _msgSender(), allowanceMap[_sender][_msgSender()].sub(_amount, "ERC20: transfer amount exceeds allowance"));
         return true;
     }
+
+    function increaseAllowance(address _spender, uint256 _addedValue) public returns (bool) {
+        _approve(_msgSender(), _spender, allowanceMap[_msgSender()][_spender].add(_addedValue));
+        return true;
+    }
+
+    function decreaseAllowance(address _spender, uint256 _subtractedValue) public returns (bool) {
+        _approve(_msgSender(), _spender, allowanceMap[_msgSender()][_spender].sub(_subtractedValue, "ERC20: decreased allowance below zero"));
+        return true;
+    }
+
+    function _transfer(address _sender, address _recipient, uint256 _amount) internal {
+        require(_sender != address(0), "ERC20: transfer from the zero address");
+        require(_recipient != address(0), "ERC20: transfer to the zero address");
+
+        balanceMap[_sender] = balanceMap[_sender].sub(_amount, "ERC20: transfer amount exceeds balance");
+        balanceMap[_recipient] = balanceMap[_recipient].add(_amount);
+        emit Transfer(_sender, _recipient, _amount);
+    }
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    function _mint(address _account, uint256 _amount) internal {
+        require(_account != address(0), "ERC20: mint to the zero address");
+
+        _totalSupply = _totalSupply.add(_amount);
+        balanceMap[_account] = balanceMap[_account].add(_amount);
+        emit Transfer(address(0), _account, _amount);
+    }
+
+    function _burn(address _account, uint256 _amount) internal {
+        require(_account != address(0), "ERC20: burn from the zero address");
+
+        balanceMap[_account] = balanceMap[_account].sub(_amount, "ERC20: burn amount exceeds balance");
+        _totalSupply = _totalSupply.sub(_amount);
+        emit Transfer(_account, address(0), _amount);
+    }
+
+    function _approve(address _owner, address _spender, uint256 _amount) internal {
+        require(_owner != address(0), "ERC20: approve from the zero address");
+        require(_spender != address(0), "ERC20: approve to the zero address");
+
+        allowanceMap[_owner][_spender] = _amount;
+        emit Approval(_owner, _spender, _amount);
+    }
+
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    function _burnFrom(address account, uint256 amount) internal {
+        _burn(account, amount);
+        _approve(account, _msgSender(), allowanceMap[account][_msgSender()].sub(amount, "ERC20: burn amount exceeds allowance"));
+    }
+
 }
