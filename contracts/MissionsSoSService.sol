@@ -95,9 +95,14 @@ contract MissionsSoSService{
     mapping(uint => State) private stateMap;
 
     //-------State Mission ---------
+    mapping(uint => uint) private stateMissionMap;
 
+    //-------State Constituent ---------
+    mapping(uint => uint) private stateConstituentMap;
 
     //-------State Service ---------
+    mapping(uint => uint) private stateServiceMap;
+
 
 
 
@@ -264,5 +269,31 @@ contract MissionsSoSService{
         );
     }
 
+    //-----------State Mission Constituent Service -----------
     
+    function setStateMissionConstituentService(uint _stateCode, uint _missionCode, 
+        uint _constituentCode, uint _serviceCode) public returns (bool){
+        if((_stateCode>=0 && _stateCode < totalState()) &&
+        (_missionCode>=0 && _missionCode < totalMission()) &&
+        (_constituentCode>=0 && _constituentCode < totalConstituent()) &&
+        (_serviceCode>=0 && _serviceCode < totalConstituentService(_constituentCode))){
+            stateMissionMap[_stateCode] = _missionCode;
+            stateConstituentMap[_stateCode]=_constituentCode;
+            stateServiceMap[_stateCode]=_serviceCode;
+            return true;
+        }else{
+            return false;
+        }
+    }
+    
+    function getStateMissionConstituentService(uint _stateCode) 
+    public view returns (uint, uint, uint, uint){
+        return (
+            _stateCode,
+            stateMissionMap[_stateCode],
+            stateConstituentMap[_stateCode],
+            stateServiceMap[_stateCode]
+        );
+    }
+
 }

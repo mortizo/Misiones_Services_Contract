@@ -4,46 +4,63 @@ let instancia;
 
 beforeEach(async () => {
     instancia = await MissionsSoSService.new()
-    await instancia.setMission("Mission 0001","#Mission0001")
-    await instancia.setMission("Mission 0002","#Mission0002")
-    await instancia.setMission("Mission 0001.0001","#")
-    await instancia.setMission("Mission 0001.0002","#")
-    await instancia.setMission("Mission 0001.0003","#")
-    await instancia.setMission("Mission 0002.0001","#")
-    await instancia.setMissionMissionFather(2,0)
-    await instancia.setMissionMissionFather(3,0)
-    await instancia.setMissionMissionFather(4,0)
-    await instancia.setMissionMissionFather(5,1)
-    await instancia.setConstituent()
-    await instancia.setConstituent()
-    await instancia.setConstituent()
 });
 
 contract('MissionsSoSService', accounts => {
 
-    
+   
     it('Crear misiones con los datos adecuados en las posiciones adecuadas', async() =>{       
+        await instancia.setMission("Mission 0001","#Mission0001")
+        await instancia.setMission("Mission 0002","#Mission0002")
+        await instancia.setMission("Mission 0001.0001","#")
+        await instancia.setMission("Mission 0001.0002","#")
+        await instancia.setMission("Mission 0001.0003","#")
+        await instancia.setMission("Mission 0002.0001","#")
         assert.equal((await instancia.getMission(2))[1], "Mission 0001.0001", "La descripción de la tercera misión no coincide")
     });
     
-    it('Crear misiones e ir actualizando el total de las misiones', async() =>{       
+    it('Crear misiones e ir actualizando el total de las misiones', async() =>{
+        await instancia.setMission("Mission 0001","#Mission0001")
+        await instancia.setMission("Mission 0002","#Mission0002")
+        await instancia.setMission("Mission 0001.0001","#")
+        await instancia.setMission("Mission 0001.0002","#")
+        await instancia.setMission("Mission 0001.0003","#")
+        await instancia.setMission("Mission 0002.0001","#")       
         assert.equal(await instancia.totalMission(), 6, "Misiones no coinciden con el total de misiones")
     });
 
-    it('Crear subMisiones asignando a misiones ya creadas', async() =>{       
+    it('Crear subMisiones asignando a misiones ya creadas', async() =>{    
+        await instancia.setMission("Mission 0001","#Mission0001")
+        await instancia.setMission("Mission 0002","#Mission0002")
+        await instancia.setMission("Mission 0001.0001","#")
+        await instancia.setMission("Mission 0001.0002","#")
+        await instancia.setMission("Mission 0001.0003","#")
+        await instancia.setMission("Mission 0002.0001","#")   
+        await instancia.setMissionMissionFather(2,0)
+        await instancia.setMissionMissionFather(3,0)
+        await instancia.setMissionMissionFather(4,0)
+        await instancia.setMissionMissionFather(5,1)
+    
         assert.equal((await instancia.getMissionMissionFather(3)), 0, "La submisión 3 está asignada a la misión 0")
         assert.equal((await instancia.getMissionMissionFather(5)), 1, "La submisión 5 está asignada a la misión 1")
     });
     
-    it('Crear constituyentes con los datos adecuados en las posiciones adecuadas', async() =>{       
+    it('Crear constituyentes con los datos adecuados en las posiciones adecuadas', async() =>{  
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituent()     
         assert.equal((await instancia.getConstituent(2))[0], 2, "El código del tercer constituyente no coincide")
     });
     
-    it('Crear constituyentes e ir actualizando el total de los constituyentes', async() =>{      
+    it('Crear constituyentes e ir actualizando el total de los constituyentes', async() =>{   
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituent()   
         assert.equal(await instancia.totalConstituent(), 3, "Constituyentes no coinciden con el total de constituyentes")
     });
-
-    it('Crear estados e ir actualizando el total de los estados', async() =>{
+  
+    
+    it('Crear estados e ir almacenando los servicios y las misiones', async() =>{
         await instancia.setState(0)
         await instancia.setState(1)
         await instancia.setState(2)
@@ -52,6 +69,9 @@ contract('MissionsSoSService', accounts => {
     });
     
     it('Crear parámetros en los constituyentes e ir actualizando el total de los parámetros por constituyente', async() =>{       
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituent()
         await instancia.setConstituentParameter(0, "clave 1.1", "valor 1.1", "descripción 1.1" )
         await instancia.setConstituentParameter(1, "clave 2.1", "valor 2.1", "descripción 2.1" )
         await instancia.setConstituentParameter(1, "clave 2.2", "valor 2.2", "descripción 2.2" )
@@ -64,6 +84,9 @@ contract('MissionsSoSService', accounts => {
     });
 
     it('Crear parámetros en los constituyentes con los datos adecuados en las posiciones adecuadas', async() =>{       
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituent()
         await instancia.setConstituentParameter(0, "clave 1.1", "valor 1.1", "descripción 1.1" )
         await instancia.setConstituentParameter(1, "clave 2.1", "valor 2.1", "descripción 2.1" )
         await instancia.setConstituentParameter(1, "clave 2.2", "valor 2.2", "descripción 2.2" )
@@ -77,6 +100,9 @@ contract('MissionsSoSService', accounts => {
     });
 
     it('Crear servicios en los constituyentes e ir actualizando el total de los servicios por constituyente', async() =>{       
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituent()
         await instancia.setConstituentService(0, "Servicio 0000.0", 0,"https://localhost/servicio001", 3, 3)
         await instancia.setConstituentService(0, "Servicio 0000.1", 0,"https://localhost/servicio002", 3, 3)
         await instancia.setConstituentService(1, "Servicio 0001.0", 0,"https://localhost/servicio003", 3, 3)
@@ -120,6 +146,9 @@ contract('MissionsSoSService', accounts => {
     
 
     it('Crear parámetros en los servicios de los constituyentes e ir actualizando el total de parámetros por servicio de los constituyente', async() =>{       
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituent()
         await instancia.setConstituentService(0, "Servicio 0000.0", 0,"https://localhost/servicio001", 3, 3)
         await instancia.setConstituentService(0, "Servicio 0000.1", 0,"https://localhost/servicio002", 3, 3)
         await instancia.setConstituentService(1, "Servicio 0001.0", 0,"https://localhost/servicio003", 3, 3)
@@ -135,8 +164,8 @@ contract('MissionsSoSService', accounts => {
         await instancia.setConstituentServiceParameter(2,0,  "clave 2.0.0", "valor 2.0.0", "descripción 2.0.0" );
         await instancia.setConstituentServiceParameter(2,0,  "clave 2.0.1", "valor 2.0.1", "descripción 2.0.1" );
         
- 
         /*
+        
         for(var i=0;i<await instancia.totalConstituent();i++)
         {
             console.log("Numero de constituyente")            
@@ -157,6 +186,7 @@ contract('MissionsSoSService', accounts => {
                 }
             }
         }
+        
         */
 
         assert.equal(await instancia.totalConstituentService(0), 2, "Total de servicios del constituyente no coinciden")
@@ -169,105 +199,38 @@ contract('MissionsSoSService', accounts => {
     });
 
     
-
-/*    
-    it('Crear servicios con los datos adecuados en las posiciones adecuadas', async() =>{       
-        assert.equal((await instancia.getService(3))[1], "Servicio 0003", "La descripción de la tercera misión no coincide")
-    });
-    
-    it('Crear servicios e ir actualizando el total de los servicios', async() =>{      
-        assert.equal(await instancia.totalService(), 3, "Servicios no coinciden con el total de servicios")
+    it('Crear estados e ir actualizando el total de los estados', async() =>{
+        await instancia.setState(0)
+        await instancia.setState(1)
+        await instancia.setState(2)
+        await instancia.setState(1)       
+        assert.equal(await instancia.totalState(), 4, "Estados no coinciden con el total de estados")
     });
 
-    it('Crear parámetros en los servicios e ir actualizando el total de los parámetros por servicio', async() =>{       
-        await instancia.setServiceParameter(1, "clave 1.1", "valor 1.1", "descripción 1.1" )
-        await instancia.setServiceParameter(1, "clave 1.2", "valor 1.2", "descripción 1.2" )
-        await instancia.setServiceParameter(1, "clave 1.3", "valor 1.3", "descripción 1.3" )
-        await instancia.setServiceParameter(2, "clave 2.1", "valor 2.1", "descripción 2.1" )
-        await instancia.setServiceParameter(2, "clave 2.2", "valor 2.2", "descripción 2.2" )
-        await instancia.setServiceParameter(3, "clave 3.1", "valor 3.1", "descripción 3.1" )  
-
-        assert.equal(await instancia.totalServiceParameter(1), 3, "Total de parámetros del servicio no coinciden")
-        assert.equal(await instancia.totalServiceParameter(2), 2, "Total de parámetros del servicio no coinciden")
-        assert.equal(await instancia.totalServiceParameter(3), 1, "Total de parámetros del servicio no coinciden")
-    });
-
-    it('Crear parámetros en los servicios con los datos adecuados en las posiciones adecuadas', async() =>{       
-        await instancia.setServiceParameter(1, "clave 1.1", "valor 1.1", "descripción 1.1" )
-        await instancia.setServiceParameter(1, "clave 1.2", "valor 1.2", "descripción 1.2" )
-        await instancia.setServiceParameter(1, "clave 1.3", "valor 1.3", "descripción 1.3" )
-        await instancia.setServiceParameter(2, "clave 2.1", "valor 2.1", "descripción 2.1" )
-        await instancia.setServiceParameter(2, "clave 2.2", "valor 2.2", "descripción 2.2" )
-        await instancia.setServiceParameter(3, "clave 3.1", "valor 3.1", "descripción 3.1" )  
-                 
-        assert.equal((await instancia.getServiceParameter(1,0))[0], "clave 1.1", "La clave del primer servicio no coincide")
-        assert.equal((await instancia.getServiceParameter(2,1))[1], "valor 2.2", "El valor del segundo servicio no coincide")
-        assert.equal((await instancia.getServiceParameter(3,0))[2], "descripción 3.1", "La descripción del tercer servicio no coincide")
-    });
-
-*/
-
-
-    /*
-    it('Debe existir vuelos disponibles', async() =>{
-        let total = await instancia.totalVuelos();
-        assert (total > 0);
-    });
-
-    it('Debe permitir a los clientes comprar un vuelo, si el valor es el adecuado', async() =>{
-        let vuelo = await instancia.vueloList(0);
-        let nombreVuelo = vuelo[0], precioVuelo = vuelo[1];
-        await instancia.comprarVuelo(0,{from: accounts[0], value:precioVuelo});
-        let vueloCompradoMap = await instancia.vueloCompradoMap(accounts[0],0);
-        let totalVueloCompradoPorClienteMap = await instancia.totalVueloCompradoPorClienteMap(accounts[0]);
-        assert (vueloCompradoMap[0], nombreVuelo);
-        assert (vueloCompradoMap[1], precioVuelo);
-        assert (totalVueloCompradoPorClienteMap, 1);        
-    });
-
-    it('No debe permitir a los clientes comprar un vuelo, si el valor es menor al precio', async() =>{
-        let vuelo = await instancia.vueloList(0);
-        precioVuelo = vuelo[1]-1000;
-        try{
-            await instancia.comprarVuelo(0,{from: accounts[0], value:precioVuelo});
-        }
-        catch(e) {return;}
-        assert.fail();
-    });
-
-    it('Debe tener el valor real del contrato', async() =>{
-        let vuelo1 = await instancia.vueloList(0);
-        let precioVuelo1 = vuelo1[1];
-
-        let vuelo2 = await instancia.vueloList(1);
-        let precioVuelo2 = vuelo2[1];
-
-        await instancia.comprarVuelo(0,{from: accounts[0], value:precioVuelo1});
-        await instancia.comprarVuelo(1,{from: accounts[0], value:precioVuelo2});
+    it('Asignar misiones y servicios a los estados e ir actualizando el total de las estados misiones', async() =>{
         
-        let nuevoBalance = await instancia.getBalanceAerolinea();
-        
-        assert.equal(nuevoBalance.toNumber(),(precioVuelo1.toNumber()+precioVuelo2.toNumber()));
+        await instancia.setState(0)
+        await instancia.setState(1)
+        await instancia.setState(2)
+        await instancia.setState(1)
 
-    });
+        await instancia.setMission("Mission 0000","#Mission0001")
+        await instancia.setMission("Mission 0001","#Mission0002")
 
-    it('Debe permitir a los clientes canjear los puntos', async() =>{
-        let vuelo = await instancia.vueloList(0);
-        let precioVuelo = vuelo[1];
+        await instancia.setConstituent()
+        await instancia.setConstituent()
+        await instancia.setConstituentService(0, "Servicio 0000.0", 0,"https://localhost/servicio00A", 3, 3)
+        await instancia.setConstituentService(0, "Servicio 0000.1", 0,"https://localhost/servicio00B", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.0", 0,"https://localhost/servicio00C", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.1", 0,"https://localhost/servicio00D", 3, 3)
+        await instancia.setConstituentService(1, "Servicio 0001.2", 0,"https://localhost/servicio00E", 3, 3)
 
-        await instancia.comprarVuelo(0,{from: accounts[0], value:precioVuelo});
+        await instancia.setStateMissionConstituentService(3,1,1,2)
                 
-        let balance = await web3.eth.getBalance(accounts[0]);
-        await instancia.redimirPuntos({from: accounts[0]});
-        let balanceFinal = await web3.eth.getBalance(accounts[0]);        
-        
-        let cliente = await instancia.clienteMap(accounts[0]);
-        let puntos = cliente[0];
-
-        assert(puntos, 0);
-        assert(balanceFinal > balance);
+        assert.equal(( await instancia.getStateMissionConstituentService(3))[0], 3, "Estados misiones constituyentes y servicios almacenados correctamente")
+        assert.equal(( await instancia.getStateMissionConstituentService(3))[1], 1, "Estados misiones constituyentes y servicios almacenados correctamente")
+        assert.equal(( await instancia.getStateMissionConstituentService(3))[2], 1, "Estados misiones constituyentes y servicios almacenados correctamente")
+        assert.equal(( await instancia.getStateMissionConstituentService(3))[3], 2, "Estados misiones constituyentes y servicios almacenados correctamente")
     });
-*/
-    
     
 });
