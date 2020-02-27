@@ -29,20 +29,20 @@ contract('MissionsSoSService', accounts => {
         assert.equal(await instancia.totalMission(), 6, "Misiones no coinciden con el total de misiones")
     });
 
-    it('Crear subMisiones asignando a misiones ya creadas', async() =>{    
-        await instancia.setMission("Mission 0001","#Mission0001")
-        await instancia.setMission("Mission 0002","#Mission0002")
-        await instancia.setMission("Mission 0001.0001","#")
-        await instancia.setMission("Mission 0001.0002","#")
-        await instancia.setMission("Mission 0001.0003","#")
-        await instancia.setMission("Mission 0002.0001","#")   
-        await instancia.setMissionMissionFather(2,0)
-        await instancia.setMissionMissionFather(3,0)
-        await instancia.setMissionMissionFather(4,0)
-        await instancia.setMissionMissionFather(5,1)
+    it('Crear superMisiones asignando a misiones ya creadas', async() =>{    
+        await instancia.setMission("Mission 0000","#Mission0001")
+        await instancia.setMission("Mission 0001","#Mission0002")
+        await instancia.setMission("Mission 0000.0001","#")
+        await instancia.setMission("Mission 0000.0002","#")
+        await instancia.setMission("Mission 0000.0003","#")
+        await instancia.setMission("Mission 0001.0001","#")   
+        await instancia.setMissionSuperMission(2,0)
+        await instancia.setMissionSuperMission(3,0)
+        await instancia.setMissionSuperMission(4,1)
+        await instancia.setMissionSuperMission(5,1)
     
-        assert.equal((await instancia.getMissionMissionFather(3)), 0, "La submisión 3 está asignada a la misión 0")
-        assert.equal((await instancia.getMissionMissionFather(5)), 1, "La submisión 5 está asignada a la misión 1")
+        assert.equal((await instancia.getMissionSuperMission(3)), 0, "La submisión 3 está asignada a la misión 0")
+        assert.equal((await instancia.getMissionSuperMission(5)), 1, "La submisión 5 está asignada a la misión 1")
     });
     
     it('Crear constituyentes con los datos adecuados en las posiciones adecuadas', async() =>{  
@@ -87,16 +87,16 @@ contract('MissionsSoSService', accounts => {
         await instancia.setConstituent()
         await instancia.setConstituent()
         await instancia.setConstituent()
-        await instancia.setConstituentParameter(0, "clave 1.1", "valor 1.1", "descripción 1.1" )
-        await instancia.setConstituentParameter(1, "clave 2.1", "valor 2.1", "descripción 2.1" )
-        await instancia.setConstituentParameter(1, "clave 2.2", "valor 2.2", "descripción 2.2" )
-        await instancia.setConstituentParameter(2, "clave 3.1", "valor 3.1", "descripción 3.1" )
-        await instancia.setConstituentParameter(2, "clave 3.2", "valor 3.2", "descripción 3.2" )
-        await instancia.setConstituentParameter(2, "clave 3.3", "valor 3.3", "descripción 3.3" )   
+        await instancia.setConstituentParameter(0, "clave 0.0", "valor 0.0", "descripción 0.0" )
+        await instancia.setConstituentParameter(1, "clave 1.0", "valor 1.0", "descripción 1.0" )
+        await instancia.setConstituentParameter(1, "clave 1.1", "valor 1.1", "descripción 1.1" )
+        await instancia.setConstituentParameter(2, "clave 2.0", "valor 2.0", "descripción 2.0" )
+        await instancia.setConstituentParameter(2, "clave 2.1", "valor 2.1", "descripción 2.1" )
+        await instancia.setConstituentParameter(2, "clave 2.2", "valor 2.2", "descripción 2.2" )   
                  
-        assert.equal((await instancia.getConstituentParameter(0,0))[0], "clave 1.1", "La clave del primer constituyente no coincide")
-        assert.equal((await instancia.getConstituentParameter(1,1))[1], "valor 2.2", "El valor del segundo constituyente no coincide")
-        assert.equal((await instancia.getConstituentParameter(2,2))[2], "descripción 3.3", "La descripción del tercer constituyente no coincide")
+        assert.equal((await instancia.getConstituentParameter(0,0))[0], "clave 0.0", "La clave del primer constituyente no coincide")
+        assert.equal((await instancia.getConstituentParameter(1,1))[1], "valor 1.1", "El valor del segundo constituyente no coincide")
+        assert.equal((await instancia.getConstituentParameter(2,2))[2], "descripción 2.2", "La descripción del tercer constituyente no coincide")
     });
 
     it('Crear servicios en los constituyentes e ir actualizando el total de los servicios por constituyente', async() =>{       
@@ -232,5 +232,14 @@ contract('MissionsSoSService', accounts => {
         assert.equal(( await instancia.getStateMissionConstituentService(3))[2], 1, "Estados misiones constituyentes y servicios almacenados correctamente")
         assert.equal(( await instancia.getStateMissionConstituentService(3))[3], 2, "Estados misiones constituyentes y servicios almacenados correctamente")
     });
+
+    it('Caso 13', async() =>{
+        
+    })
+    
+    it('Caso 14', async() =>{
+        
+    })
+    
     
 });
